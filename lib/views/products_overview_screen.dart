@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/models/enums/filter_options.dart';
+import 'package:shop/providers/cart.dart';
+import 'package:shop/widgets/badge_widget.dart';
 import 'package:shop/widgets/product_grid_widget.dart';
 
 class ProductsOverviewScreen extends StatefulWidget {
@@ -37,6 +40,16 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 value: FilterOptions.All,
               ),
             ],
+          ),
+          Consumer<Cart>(
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {},
+            ),
+            builder: (_, cart, child) => BadgeWidget(
+              value: cart.itemCount.toString(),
+              child: child,
+            ),
           ),
         ],
       ),
