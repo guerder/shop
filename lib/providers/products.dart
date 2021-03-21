@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exceptions/http_exception.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/utils/constants.dart';
 
 class Products with ChangeNotifier {
-  final String _baseUrl =
-      'https://flutter-cod3r-13e41-default-rtdb.firebaseio.com/products';
   List<Product> _items = [];
 
   List<Product> get items => [..._items];
@@ -19,7 +18,7 @@ class Products with ChangeNotifier {
   int get itemsCount => _items.length;
 
   Future<void> loadProducts() async {
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("${Constants.BASE_API_URL}/products.json");
 
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
@@ -42,7 +41,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product newProduct) async {
     final response = await http.post(
-      "$_baseUrl.json",
+      "${Constants.BASE_API_URL}/products.json",
       body: json.encode({
         'title': newProduct.title,
         'description': newProduct.description,
@@ -72,7 +71,7 @@ class Products with ChangeNotifier {
     final index = _items.indexWhere((prod) => prod.id == product.id);
     if (index >= 0) {
       await http.patch(
-        "$_baseUrl/${product.id}.json",
+        "${Constants.BASE_API_URL}/${product.id}.json",
         body: json.encode({
           'title': product.title,
           'description': product.description,
@@ -92,7 +91,8 @@ class Products with ChangeNotifier {
       _items.remove(product);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/$id.json");
+      final response =
+          await http.delete("${Constants.BASE_API_URL}/products/$id.json");
       if (response.statusCode >= 400) {
         _items.insert(index, product);
         notifyListeners();
