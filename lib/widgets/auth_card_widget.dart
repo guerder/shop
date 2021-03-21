@@ -42,10 +42,14 @@ class _AuthCardWidgetState extends State<AuthCardWidget> {
         _authData['password'],
       );
     } else {
+<<<<<<< HEAD
       await auth.signup(
         _authData['email'],
         _authData['password'],
       );
+=======
+      await auth.signup(_authData['email'], _authData['password']);
+>>>>>>> 05d84f2c7fe847b3b6ffd24d62f5e104a51298cb
     }
 
     setState(() {
