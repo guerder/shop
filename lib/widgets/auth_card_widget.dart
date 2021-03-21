@@ -37,9 +37,15 @@ class _AuthCardWidgetState extends State<AuthCardWidget> {
     Auth auth = Provider.of<Auth>(context, listen: false);
 
     if (_authMode == AuthMode.Login) {
-      // Login
+      await auth.login(
+        _authData['email'],
+        _authData['password'],
+      );
     } else {
-      await auth.signup(_authData['email'], _authData['password']);
+      await auth.signup(
+        _authData['email'],
+        _authData['password'],
+      );
     }
 
     setState(() {
