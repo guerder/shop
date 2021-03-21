@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/data/dummy_data.dart';
 import 'package:shop/providers/product.dart';
 
 class Products with ChangeNotifier {
-  List<Product> _items = DUMMY_PRODUCTS;
+  final String _url =
+      'https://flutter-cod3r-13e41-default-rtdb.firebaseio.com/products.json';
+  List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -17,12 +17,31 @@ class Products with ChangeNotifier {
 
   int get itemsCount => _items.length;
 
-  Future<void> addProduct(Product newProduct) async {
-    const url =
-        'https://flutter-cod3r-13e41-default-rtdb.firebaseio.com/products.json';
+  Future<void> loadProducts() async {
+    final response = await http.get(_url);
 
+    Map<String, dynamic> data = json.decode(response.body);
+    _items.clear();
+    if (data != null) {
+      data.forEach((productId, productData) {
+        _items.add(
+          Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            price: productData['price'],
+            imageUrl: productData['imageUrl'],
+            isFavorite: productData['isFavorite'],
+          ),
+        );
+      });
+      notifyListeners();
+    }
+  }
+
+  Future<void> addProduct(Product newProduct) async {
     final response = await http.post(
-      url,
+      _url,
       body: json.encode({
         'title': newProduct.title,
         'description': newProduct.description,
