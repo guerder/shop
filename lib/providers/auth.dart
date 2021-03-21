@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exceptions/auth_exception.dart';
 
 class Auth with ChangeNotifier {
   Future<void> _authenticate(
@@ -17,7 +18,13 @@ class Auth with ChangeNotifier {
         "returnSecureToken": true,
       }),
     );
+
     print(json.decode(response.body));
+
+    final responseBody = json.decode(response.body);
+    if (responseBody["error"] != null) {
+      throw AuthException(responseBody["error"]['message']);
+    }
 
     return Future.value();
   }
