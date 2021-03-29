@@ -13,11 +13,43 @@ class AuthCardWidget extends StatefulWidget {
   _AuthCardWidgetState createState() => _AuthCardWidgetState();
 }
 
-class _AuthCardWidgetState extends State<AuthCardWidget> {
+class _AuthCardWidgetState extends State<AuthCardWidget>
+    with SingleTickerProviderStateMixin {
   GlobalKey<FormState> _form = GlobalKey();
   bool _isLoading = false;
   AuthMode _authMode = AuthMode.Login;
   final _passwordController = TextEditingController();
+
+  AnimationController _controller;
+  Animation<Size> _heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+
+    _heightAnimation = Tween(
+      begin: Size(double.infinity, 290),
+      end: Size(double.infinity, 371),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+      ),
+    );
+
+    _heightAnimation.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   final Map<String, String> _authData = {
     'email': '',
@@ -85,10 +117,12 @@ class _AuthCardWidgetState extends State<AuthCardWidget> {
       setState(() {
         _authMode = AuthMode.SignUp;
       });
+      _controller.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      _controller.reverse();
     }
   }
 
@@ -101,6 +135,8 @@ class _AuthCardWidgetState extends State<AuthCardWidget> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
+        // height: _authMode == AuthMode.Login ? 290 : 371,
+        height: _heightAnimation.value.height,
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16),
         child: Form(
